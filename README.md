@@ -11,7 +11,7 @@ pip install torch==2.4.0 --index-url https://download.pytorch.org/whl/cu121
 pip3 install vllm==0.6.3 # or you can install 0.5.4, 0.4.2 and 0.3.1
 pip3 install ray
 pip install transformers==4.47.0
-
+pip install trl==0.17.0
 
 # verl
 cd src/verl
