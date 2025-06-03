@@ -1,6 +1,27 @@
 # Cell-o1: Training LLMs to Solve Single-Cell Reasoning Puzzles with Reinforcement Learning
 
 ---
+## Installation
+
+```
+conda create -n cello1 python=3.9
+# install torch [or you can skip this step and let vllm to install the correct version for you]
+pip install torch==2.4.0 --index-url https://download.pytorch.org/whl/cu121
+# install vllm
+pip3 install vllm==0.6.3 # or you can install 0.5.4, 0.4.2 and 0.3.1
+pip3 install ray
+pip install transformers==4.47.0
+
+
+# verl
+cd src/verl
+pip install -e .
+
+# flash attention 2
+pip3 install flash-attn --no-build-isolation
+# quality of life
+pip install wandb IPython matplotlib
+```
 
 ## 📦 Directory Structure
 
