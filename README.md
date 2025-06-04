@@ -19,6 +19,7 @@
 Cell type annotation is a key task in analyzing the heterogeneity of single-cell RNA sequencing data. Although recent foundation models automate this process, they typically annotate cells independently, without considering batch-level cellular context or providing explanatory reasoning. In contrast, human experts often annotate distinct cell types for different cell clusters based on their domain knowledge. 
 To mimic this expert behavior, we introduce ***CellPuzzles***—a benchmark requiring unique cell-type assignments across cell batches. Existing LLMs struggle with this task, with the best baseline (OpenAI's o1) achieving only 19.0% batch accuracy. To address this, we present ***Cell-o1***, a reasoning-enhanced language model trained via SFT on distilled expert traces, followed by RL with batch-level rewards. ***Cell-o1*** outperforms all baselines on both cell-level and batch-level metrics, and exhibits emergent behaviors such as self-reflection and curriculum reasoning, offering insights into its interpretability and generalization.
 
+<br>
 
 <p align="center">
   <img src="assets/overview.png" alt="CellPuzzles Overview" width="95%">
@@ -53,6 +54,7 @@ pip install wandb IPython matplotlib
 <h2 id="3">🚀 Quick Start: Train with Preprocessed Data</h2>
 We provide preprocessed training and test data so you can get started immediately with model fine-tuning and reinforcement learning.
 
+<br>
 <h3 id="3-1">📦 Step 1: Download Preprocessed Data</h3>
 
 You can load the dataset using the 🤗 `datasets` library:
@@ -85,7 +87,7 @@ with open("processed_data/test_data.json", "w") as f:
 
 - `test`: Held-out data for evaluation, formatted similarly to `train`.
 
-
+<br>
 <h3 id="3-2">🧠 Step 2: Supervised Fine-Tuning (SFT)</h3>
 
 Use the `reasoning` split to cold start the model with expert-like reasoning traces.
@@ -101,12 +103,12 @@ This will:
 
 > 📌 Edit `DATA_PATH` in sft.sh if your file path differs from the default.
 
-
+<br>
 <h3 id="3-3">🎯 Step 3: Reinforcement Learning (GRPO / PPO)</h3>
 
 Use the `train` split (`processed_data/grpo_train.json`) to train the model with batch-level rewards.
 
-<h4 id="4-1">🧱 3.1 Preprocess Training Data </h4>
+<h4 id="4-1">🧱 3.1  Preprocess Training Data </h4>
 Convert the raw JSON data into Parquet format:
 
 ```bash
@@ -118,7 +120,7 @@ python examples/data_preprocess/cello1.py \
 
 This creates `.parquet` files in `parquet_output/`, used for training and validation.
 
-<h4 id="4-2">🧱 3.2 Run GRPO Training </h4>
+<h4 id="4-2">🏋️‍♂️ 3.2  Run GRPO Training </h4>
 
 Launch GRPO reinforcement learning:
 
