@@ -2,7 +2,7 @@
 
 # ========== Configuration ==========
 LLM_NAME="Qwen/Qwen2.5-7B-Instruct"
-DATA_PATH="./sft_train.json"
+DATA_PATH="../processed_data/sft_train.json"
 CACHE_DIR="../huggingface/hub"
 SAVE_DIR="./saved_models"
 R=256
