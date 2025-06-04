@@ -76,7 +76,7 @@ BATCH_QA_DIR="path/to/output_batch_qa"
 FINAL_OUTPUT_DIR="path/to/final_llm_input"
 ```
 
-### Step 1–3: Run the full pipeline
+### Run the full pipeline
 
 ```bash
 cd data
@@ -175,3 +175,12 @@ bash examples/ppo_trainer/run_cello1_ppo.sh
 
 ---
 
+<h3 id="5-1"> 📚 References</h3>
+If you use our repository, please cite the following related paper:
+
+@article{fang2025cello1,
+  title={Cell-o1: Training LLMs to Solve Single-Cell Reasoning Puzzles with Reinforcement Learning},
+  author={Fang, Yin and Jin, Qiao and Xiong, Guangzhi and Jin, Bowen and Zhong, Xianrui and Ouyang, Siru and Zhang, Aidong and Han, Jiawei and Lu, Zhiyong},
+  journal={arXiv preprint arXiv:2506.02911},
+  year={2025}
+}
