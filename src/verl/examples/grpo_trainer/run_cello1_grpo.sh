@@ -5,13 +5,13 @@ set -x
 
 # Path to preprocessed training and validation datasets (in Parquet format)
 TRAIN_DATA="/path/to/train.parquet"
-VAL_DATA="/path/to/val.parquet"
+VAL_DATA="/path/to/test.parquet"
 
 # Path to the merged SFT checkpoint (after merge_and_unload)
-SFT_MERGED_CKPT="/path/to/sft_merged_ckpt"
+SFT_MERGED_CKPT="Qwen/Qwen2.5-7B-Instruct"
 
 # Path to your custom reward function
-REWARD_FN="../../verl/workers/reward_function/compute_score.py"
+REWARD_FN="verl/workers/reward_function/compute_score.py"
 
 # Logging and experiment tracking (optional with wandb)
 PROJECT_NAME="your_project_name"

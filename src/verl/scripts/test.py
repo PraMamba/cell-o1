@@ -17,7 +17,7 @@ cached_corpora = dict()
 class LLMEngine:
     def __init__(
         self,
-        llm_name: str = "meta-llama/Meta-Llama-3.1-8B-Instruct", 
+        llm_name: str = "meta-llama/Llama-3.1-8B-Instruct", 
         cache_dir: Optional[str] = None, 
         api: bool = False, 
         lora: bool = False, 
@@ -42,17 +42,9 @@ class LLMEngine:
                 lora = True
             if lora:
                 from peft import PeftModel
-                # base_model_name = json.load(open(os.path.join(self.llm_name, "adapter_config.json")))["base_model_name_or_path"]
                 model = PeftModel.from_pretrained(model, self.llm_name)
                 model = model.merge_and_unload()
             else:
-                # self.model = transformers.pipeline(
-                #     "text-generation",
-                #     model=self.llm_name,
-                #     torch_dtype=self.model_dtype,
-                #     device_map="auto",
-                #     model_kwargs={"cache_dir":self.cache_dir},
-                # )
                 pass
             self.model = transformers.pipeline("text-generation", model=model, tokenizer=tokenizer)
             self.model.model.config._name_or_path = self.llm_name
@@ -95,7 +87,7 @@ parser.add_argument("--llm_name", type=str, default="meta-llama/Meta-Llama-3.1-8
 parser.add_argument("--n", type=int, default=1)
 parser.add_argument("--i", type=int, default=0)
 parser.add_argument("--folder", type=str, default="prediction")
-parser.add_argument("--dataset", type=str, default="/netmnt/vast01/cbb01/lulab/fangy6/new_cello1/diverse_num_test_final/kidney_test.json")
+parser.add_argument("--dataset", type=str, default="test.json")
 
 args = parser.parse_args()
 
@@ -107,11 +99,9 @@ llm = LLMEngine(
 save_dir = f"/mnt/data/{args.folder}/{args.llm_name.replace('/', '_')}"
 
 dataset = json.load(open(args.dataset))
-# os.makedirs("cell-o1/prediction_0308/llama_3.1_8b", exist_ok=True)
 os.makedirs(save_dir, exist_ok=True)
 
 curr_range = [j for j in range(len(dataset)) if j % args.n == args.i]
-# curr_range = [j for j in range(len(dataset)) if j % args.n == args.i][::-1]
 
 for i in tqdm.tqdm(curr_range):
     json_path = os.path.join(save_dir, f"{i}.json")
@@ -127,8 +117,7 @@ for i in tqdm.tqdm(curr_range):
         except Exception:
             print(f"Invalid JSON at {json_path}, will regenerate.")
             regenerate = True
-    # if os.path.exists(os.path.join(save_dir, f"{i}.json")):
-    #     continue
+
     else:
         regenerate = True
     

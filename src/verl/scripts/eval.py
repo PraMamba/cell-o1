@@ -54,8 +54,7 @@ def is_legitimate_format(prediction, candidate, gold):
     return True
 
 
-tokenizer = AutoTokenizer.from_pretrained('/mnt/data/Qwen2.5-7B-Instruct')
-# tokenizer = AutoTokenizer.from_pretrained('/data/fangy6/Llama-3.1-8B-Instruct')
+tokenizer = AutoTokenizer.from_pretrained('Qwen/Qwen2.5-7B-Instruct')
 
 def process_record(record):
     """

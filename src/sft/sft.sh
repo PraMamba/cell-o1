@@ -1,21 +1,20 @@
 #!/bin/bash
 
 # ========== Configuration ==========
-LLM_NAME="meta-llama/Meta-Llama-3.1-8B-Instruct"  # or "Qwen2.5-7B-Instruct"
-DATA_PATH="../sft_data.json"
+LLM_NAME="Qwen/Qwen2.5-7B-Instruct"
+DATA_PATH="./sft_train.json"
 CACHE_DIR="../huggingface/hub"
+SAVE_DIR="./saved_models"
 R=256
 LR=5e-5
-N_EPOCHS=10
+N_EPOCHS=1
 BATCH_SIZE=6
 ACCUM_STEPS=16
 EVAL_RATIO=0.1
 MAX_SEQ_LENGTH=4096
 DEVICE="auto"
 
-# Save directory based on config
-SAVE_DIR=$(echo "${DATA_PATH}" | sed 's/data/trained_models/' | sed 's/.csv//' | sed 's/.json//')
-SAVE_DIR="${SAVE_DIR}/$(echo $LLM_NAME | sed 's/\//_/')/sft/${MAX_SEQ_LENGTH}_${R}_${LR}_${N_EPOCHS}_${BATCH_SIZE}_${ACCUM_STEPS}_${EVAL_RATIO}"
+
 
 # ========== Step 1: SFT Training ==========
 echo "Running SFT training..."
@@ -29,12 +28,13 @@ python sft_trainer.py \
     --batch_size "$BATCH_SIZE" \
     --accumulation_steps "$ACCUM_STEPS" \
     --eval_ratio "$EVAL_RATIO" \
-    --max_seq_length "$MAX_SEQ_LENGTH"
+    --max_seq_length "$MAX_SEQ_LENGTH" \
+    --save_dir "$SAVE_DIR"
 
 
 # ========== Step 2: Merge LoRA ==========
 # Determine checkpoint path (change according to actual best checkpoint number)
-CHECKPOINT="${SAVE_DIR}/checkpoint-${N_EPOCHS}00"  # adjust this if different
+CHECKPOINT="${SAVE_DIR}/checkpoint-${N_EPOCHS}"  # adjust this if different
 MERGE_OUTPUT="${SAVE_DIR}/merged_model"
 
 echo "Merging LoRA weights from checkpoint: $CHECKPOINT"

@@ -7,13 +7,13 @@ set -x
 
 # Path to your training and validation datasets (Parquet format)
 TRAIN_DATA="/path/to/train.parquet"
-VAL_DATA="/path/to/val.parquet"
+VAL_DATA="/path/to/test.parquet"
 
 # Path to merged SFT checkpoint (used for both actor and critic initialization)
-MERGED_CKPT="/path/to/sft_merged_ckpt"
+MERGED_CKPT="Qwen/Qwen2.5-7B-Instruct"
 
 # Path to your custom reward function
-REWARD_FN="../../verl/workers/reward_function/compute_score.py"
+REWARD_FN="verl/workers/reward_function/compute_score.py"
 
 # WandB configuration (optional)
 PROJECT_NAME="your_project_name"

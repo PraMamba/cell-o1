@@ -120,7 +120,7 @@ def main():
                 new_item = {
                     "system_msg": system_msg,
                     "user_msg": item.get("question", ""),
-                    "answer": item.get("answer", "")
+                    "assistant_msg": item.get("answer", "")
                 }
                 if i in test_file_indices[path]:
                     test_data.append(new_item)

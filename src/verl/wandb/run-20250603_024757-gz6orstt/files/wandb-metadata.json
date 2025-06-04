@@ -1,0 +1,102 @@
+{
+  "os": "Linux-6.1.131-143.221.amzn2023.x86_64-x86_64-with-glibc2.34",
+  "python": "CPython 3.9.0",
+  "startedAt": "2025-06-03T02:47:57.196965Z",
+  "args": [
+    "--node-ip-address=172.16.0.213",
+    "--node-manager-port=44243",
+    "--object-store-name=/tmp/ray/session_2025-06-03_02-45-05_990503_729568/sockets/plasma_store",
+    "--raylet-name=/tmp/ray/session_2025-06-03_02-45-05_990503_729568/sockets/raylet",
+    "--redis-address=None",
+    "--metrics-agent-port=59703",
+    "--logging-rotate-bytes=536870912",
+    "--logging-rotate-backup-count=5",
+    "--runtime-env-agent-port=44615",
+    "--gcs-address=172.16.0.213:63659",
+    "--session-name=session_2025-06-03_02-45-05_990503_729568",
+    "--temp-dir=/tmp/ray",
+    "--webui=",
+    "--cluster-id=d2888f9b8cb25ed3786035620ebbf50811570c80e30187933d3bcff1",
+    "--startup-token=96",
+    "--worker-launch-time-ms=1748918708541",
+    "--node-id=9b31b7c01f94ecc952d45d891bf98bae65b32fb39fa38766be5dd1cb",
+    "--runtime-env-hash=-1053485826"
+  ],
+  "program": "/mnt/data/miniconda3/envs/verl/lib/python3.9/site-packages/ray/_private/workers/default_worker.py",
+  "git": {
+    "remote": "git@github.com:Fangyinfff/Cell-o1.git",
+    "commit": "1d655180d2bf25a6b97afbc2045824e7954ace5a"
+  },
+  "email": "fangyin@zju.edu.cn",
+  "root": "/mnt/data/Cell-o1/netmnt/vast01/cbb01/lulab/fangy6/Cell-o1/src/verl",
+  "host": "ip-172-16-0-213.us-west-2.compute.internal",
+  "executable": "/mnt/data/miniconda3/envs/verl/bin/python3",
+  "cpu_count": 48,
+  "cpu_count_logical": 96,
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "gpu_count": 8,
+  "disk": {
+    "/": {
+      "total": "1073662111744",
+      "used": "50977439744"
+    }
+  },
+  "memory": {
+    "total": "1204526698496"
+  },
+  "cpu": {
+    "count": 48,
+    "countLogical": 96
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "memoryTotal": "42949672960",
+      "cudaCores": 6912,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "memoryTotal": "42949672960",
+      "cudaCores": 6912,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "memoryTotal": "42949672960",
+      "cudaCores": 6912,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "memoryTotal": "42949672960",
+      "cudaCores": 6912,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "memoryTotal": "42949672960",
+      "cudaCores": 6912,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "memoryTotal": "42949672960",
+      "cudaCores": 6912,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "memoryTotal": "42949672960",
+      "cudaCores": 6912,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "memoryTotal": "42949672960",
+      "cudaCores": 6912,
+      "architecture": "Ampere"
+    }
+  ],
+  "cudaVersion": "12.8"
+}
