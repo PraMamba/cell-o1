@@ -132,7 +132,7 @@ Convert SFT-labeled QA batches into Parquet format.
 ```bash
 cd verl
 
-python examples/data_preprocess/cello1.py  --train_file /path/to/sft_train.json  --val_file /path/to/sft_val.json  --test_file /path/to/sft_test.json  --local_dir /path/to/output_parquet
+python examples/data_preprocess/cello1.py  --train_file /path/to/sft_train.json  --local_dir /path/to/output_parquet
 ```
 
 ---
