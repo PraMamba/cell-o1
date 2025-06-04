@@ -96,7 +96,7 @@ llm = LLMEngine(
     cache_dir = "../huggingface/hub",
 )
 
-save_dir = f"/mnt/data/{args.folder}/{args.llm_name.replace('/', '_')}"
+save_dir = os.path.join(args.folder, args.llm_name.replace('/', '_'))
 
 dataset = json.load(open(args.dataset))
 os.makedirs(save_dir, exist_ok=True)
