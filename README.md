@@ -1,4 +1,4 @@
-<img width="727" alt="image" src="https://github.com/user-attachments/assets/b553facd-bad7-4a60-82a6-06eda4024a0c" /><h1 align="center">
+<h1 align="center">
 🤔 Cell-o1: Training LLMs to Solve Single-Cell Reasoning Puzzles with Reinforcement Learning
 </h1>
 
