@@ -29,6 +29,8 @@ To mimic this expert behavior, we introduce ***CellPuzzles***—a benchmark requ
 
 ```
 conda create -n cello1 python=3.9
+conda activate cello1
+
 # install torch [or you can skip this step and let vllm to install the correct version for you]
 pip install torch==2.4.0 --index-url https://download.pytorch.org/whl/cu121
 # install vllm
@@ -57,15 +59,46 @@ You can load the dataset using the 🤗 `datasets` library:
 
 ```python
 from datasets import load_dataset
+import json
+
 # Load all splits
 dataset = load_dataset("ncbi/CellPuzzles")
+
 # Access each split
-train_data = dataset["train"]
-test_data = dataset["test"]
-reasoning_data = dataset["reasoning"]
+reasoning_data = dataset["reasoning"]   # For SFT
+train_data = dataset["train"]           # For GRPO training
+test_data = dataset["test"]             # For evaluation
+
+# Save each split to JSON
+os.makedirs("processed_data", exist_ok=True)
+
+with open("processed_data/sft_train.json", "w") as f:
+    json.dump(reasoning_data, f, indent=2)
+
+with open("processed_data/grpo_train.json", "w") as f:
+    json.dump(train_data, f, indent=2)
+
+with open("processed_data/test_data.json", "w") as f:
+    json.dump(test_data, f, indent=2)
 ```
 
-[To do ...]
+- `reasoning`: Expert-like reasoning traces distilled from o1, used to cold start the model via SFT.
+
+- `train`: Raw QA-style data used for RL (GRPO), containing both user prompts and gold answers.
+
+- `test`: Held-out data for evaluation, formatted similarly to `train`.
+
+
+<h3 id="3-2">🧠 Step 2: Supervised Fine-Tuning (SFT)</h3>
+
+Use the `reasoning` split to cold start the model with expert-like reasoning traces.
+
+```bash
+cd sft
+bash sft.sh
+```
+
+
 
 ### Step 0: Configure paths
 
