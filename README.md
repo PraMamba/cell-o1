@@ -177,63 +177,22 @@ CUDA_VISIBLE_DEVICES=0 python scripts/test.py \
 
 > 📌 To run multi-shard decoding (e.g., 16 shards across 8 GPUs), you can launch multiple instances of this script with different `--i` and `CUDA_VISIBLE_DEVICES`.
 
-### Step 0: Configure paths
+<br>
+<h3 id="3-5">📊 Step 5: Evaluate Model Predictions</h3>
 
-Edit the top section of `run_pipeline.sh`:
-
-```bash
-# Path to input raw h5ad files
-RAW_H5AD_DIR="path/to/h5ad_dir"
-
-# Output directories
-CELL_JSON_DIR="path/to/output_cell_metadata"
-BATCH_QA_DIR="path/to/output_batch_qa"
-FINAL_OUTPUT_DIR="path/to/final_llm_input"
-```
-
-### Run the full pipeline
+To run the evaluation:
 
 ```bash
-cd data
-bash run_pipeline.sh
+python eval.py --input_dir prediction_output/
 ```
+Where `prediction_output/` contains the JSON prediction files generated in Step 4. 
 
-This will:
-
-1. Convert raw `.h5ad` to cell-level JSON with context and top genes.
-2. Group cells into QA batches (each batch = N cells from a donor).
-3. Convert QA into LLM-friendly input and split into `train` / `test`.
-
----
-
-## ⚙️ Script Usage (Standalone)
-
-```bash
-# Step 1: Extract cell context
-python data/build_context.py --input_dir path/to/h5ad --output_dir path/to/json
-
-# Step 2: Generate batch QA
-python data/match_qa.py --input_dir path/to/json --output_dir path/to/qa
-
-# Step 3: Convert to LLM format
-python data/split_train_test.py --input_dir path/to/qa --output_dir path/to/final --max_test_samples 1100
-```
-
----
-
-## 📦 Final Output Format
-
-```
-final_llm_input/
-├── train/
-│   ├── *.json                # Each sample contains {"system_msg", "user_msg", "answer"}
-│   ├── train_data.json       # Merged training set
-│   └── train_raw_data.json   # Original QA format (for RL)
-├── test/
-│   ├── *.json
-│   └── test_data.json
-```
-
+It reports:
+- **Partial Accuracy (cell-level)**: proportion of correctly matched cell types per batch.
+- **Exact Match Accuracy (batch-level)**: proportion of batches with fully correct cell-type assignments.
+- **Legitimate Format Ratio**: how often the prediction strictly follows the `<think>...</think>\n<answer>...</answer>` format.
+- **Uniqueness Score**: diversity of predicted types (higher is better).
+- **Prediction Length**: average number of tokens in each prediction.
 
 
 ---
