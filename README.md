@@ -1,7 +1,7 @@
 <h1 align="center">
-🤔 Cell-o1: Training LLMs to Solve Single-Cell Reasoning Puzzles with Reinforcement Learning
+  <img src="assets/cello1.png" alt="Cell-o1 Logo" width="60" style="vertical-align: middle; margin-right: 10px;" />
+  Cell-o1: Training LLMs to Solve Single-Cell Reasoning Puzzles with Reinforcement Learning
 </h1>
-
 
 
 <p align="center">
@@ -14,16 +14,16 @@
 <br>
 
 
-<h2 id="1">Overview</h2>
+<h2 id="1">📌 Overview</h2>
 
 Cell type annotation is a key task in analyzing the heterogeneity of single-cell RNA sequencing data. Although recent foundation models automate this process, they typically annotate cells independently, without considering batch-level cellular context or providing explanatory reasoning. In contrast, human experts often annotate distinct cell types for different cell clusters based on their domain knowledge. To mimic this workflow, we introduce the ***CellPuzzles*** task, where the objective is to assign unique cell types to a batch of cells. This benchmark spans diverse tissues, diseases, and donor conditions, and requires reasoning across the batch-level cellular context to ensure label uniqueness. We find that off-the-shelf large language models (LLMs) struggle on ***CellPuzzles***, with the best baseline (OpenAI's o1) achieving only 19.0% batch-level accuracy. To fill this gap, we propose ***Cell-o1***, a 7B LLM trained via supervised fine-tuning on distilled reasoning traces, followed by reinforcement learning with batch-level rewards. 
 
+<p align="center">
+  <img src="assets/overview.png" alt="CellPuzzles Overview" width="95%">
+</p>
 
-<img width="1354" alt="image" src="https://github.com/user-attachments/assets/af625801-a1dd-4165-af42-2a4942c3a7ff" />
 
-
-
-<h2 id="2">Installation</h2>
+<h2 id="2">🧰 Installation</h2>
 
 ```
 conda create -n cello1 python=3.9
