@@ -140,6 +140,43 @@ To use PPO instead of GRPO:
 bash examples/ppo_trainer/run_cello1_ppo.sh
 ```
 
+<h4 id="4-4">🔁 3.4 Convert RL Checkpoint to Hugging Face Format </h4>
+
+After GRPO training, if your model is saved in FSDP (Fully Sharded Data Parallel) format, you can convert it to Hugging Face format using:
+
+```bash
+python scripts/convert_fsdp_to_hf.py \
+  /path/to/fsdp_checkpoint/actor \
+  /path/to/huggingface_template_model \
+  /path/to/save/huggingface_model
+```
+- **First argument**: path to the FSDP actor checkpoint (e.g., `global_step_2500/actor`)
+- **Second argument**: base model directory used to load config and tokenizer (e.g., `Qwen/Qwen2.5-7B-Instruct`)
+- **Third argument**: output directory to save the converted Hugging Face model (e.g., `global_step_2500/huggingface`)
+
+<br>
+<h3 id="3-4">🧪 Step 4: Run Inference on Test Set</h3>
+
+After converting your model to Hugging Face format, run inference using `scripts/test.py`.
+This script supports multi-shard decoding via `--n` (total shards) and `--i` (shard index).
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python scripts/test.py \
+  --n 1 \
+  --i 0 \
+  --llm_name /path/to/global_step_2500/huggingface \
+  --folder prediction_output \
+  --dataset /path/to/test_data.json
+```
+
+- `--n`: Total number of shards (e.g., `1` for single process)
+- `--i`: Shard index (0-based, must be < `n`)
+- `--llm_name`: Path to the converted Hugging Face model (e.g., `global_step_2500/huggingface`)
+- `--folder`: Output directory where predictions are saved (one JSON per example)
+- `--dataset`: Path to the test set JSON file (e.g., `processed_data/test_data.json`)
+
+> 📌 To run multi-shard decoding (e.g., 16 shards across 8 GPUs), you can launch multiple instances of this script with different `--i` and `CUDA_VISIBLE_DEVICES`.
+
 ### Step 0: Configure paths
 
 Edit the top section of `run_pipeline.sh`:
