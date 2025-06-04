@@ -93,7 +93,7 @@ args = parser.parse_args()
 
 llm = LLMEngine(
     llm_name = args.llm_name,
-    cache_dir = "/mnt/data/huggingface/hub",
+    cache_dir = "../huggingface/hub",
 )
 
 save_dir = f"/mnt/data/{args.folder}/{args.llm_name.replace('/', '_')}"
