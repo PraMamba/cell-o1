@@ -140,7 +140,7 @@ To use PPO instead of GRPO:
 bash examples/ppo_trainer/run_cello1_ppo.sh
 ```
 
-<h4 id="4-4">🔁 3.4 Convert RL Checkpoint to Hugging Face Format </h4>
+<h4 id="4-4">📤 3.4 Convert RL Checkpoint to Hugging Face Format </h4>
 
 After GRPO training, if your model is saved in FSDP (Fully Sharded Data Parallel) format, you can convert it to Hugging Face format using:
 
