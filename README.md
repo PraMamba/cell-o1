@@ -43,30 +43,24 @@ pip3 install flash-attn --no-build-isolation
 pip install wandb IPython matplotlib
 ```
 
-## 📦 Directory Structure
 
-```
-.
-├── data/                # Data preprocessing pipeline
-│   ├── build_context.py       # Step 1: Extract cell-level metadata from .h5ad
-│   ├── match_qa.py          # Step 2: Group cells into batch-level QA format
-│   ├── split_train_test.py      # Step 3: Format for LLM input, stratified split
-│   └── run_pipeline.sh      # One-click runner for the entire pipeline
-├── sft/                 # Supervised fine-tuning code
-│   ├── sft_trainer.py
-│   ├── merge_lora.py
-│   └── sft.sh
-├── verl/                # GRPO framework and preprocessing
-│   └── examples/
-│       ├── data_preprocess/cello1.py
-│       ├── grpo_trainer/run_cello1_grpo.sh
-│       └── ppo_trainer/run_cello1_ppo.sh
-└── README.md            # This file
-```
+<h2 id="3">🚀 Quick Start: Train with Preprocessed Data</h2>
+We provide preprocessed training and test data so you can get started immediately with model fine-tuning and reinforcement learning.
 
----
+<h3 id="3-1">📦 Step 1: Download Preprocessed Data</h3>
 
-## 🚀 Quick Start: Data Preprocessing (3 Steps)
+You can load the dataset using the 🤗 `datasets` library:
+
+```python
+from datasets import load_dataset
+# Load all splits
+dataset = load_dataset("ncbi/CellPuzzles")
+# Access each split
+train_data = dataset["train"]
+test_data = dataset["test"]
+reasoning_data = dataset["reasoning"]
+
+[To do ...]
 
 ### Step 0: Configure paths
 
