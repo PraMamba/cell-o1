@@ -65,7 +65,8 @@ FINAL_OUTPUT_DIR="path/to/final_llm_input"
 ### Step 1–3: Run the full pipeline
 
 ```bash
-bash data/run_pipeline.sh
+cd data
+bash run_pipeline.sh
 ```
 
 This will:
