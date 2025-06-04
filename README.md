@@ -1,5 +1,18 @@
 # Cell-o1: Training LLMs to Solve Single-Cell Reasoning Puzzles with Reinforcement Learning
 
+<h1 align="center">
+🤔 Cell-o1: Training LLMs to Solve Single-Cell Reasoning Puzzles with Reinforcement Learning
+</h1>
+
+<p align="center">
+  <a href="https://www.arxiv.org/abs/2506.02911" target="_blank"><img src="https://img.shields.io/badge/arXiv-2506.02911-FF6B6B?style=for-the-badge&logo=arxiv&logoColor=white" alt="arXiv"></a>
+  <a href="https://github.com/ncbi-nlp/cell-o1"><img src="https://img.shields.io/badge/GitHub-Code-4A90E2?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+  <a href="https://huggingface.co/datasets/ncbi/CellPuzzles"><img src="https://img.shields.io/badge/HuggingFace-Dataset-FFBF00?style=for-the-badge&logo=huggingface&logoColor=white" alt="HuggingFace Dataset"></a>
+  <a href="https://huggingface.co/ncbi/Cell-o1"><img src="https://img.shields.io/badge/HuggingFace-Model-FFBF00?style=for-the-badge&logo=huggingface&logoColor=white" alt="HuggingFace Model"></a>
+</p>
+
+<br>
+
 ---
 ## Installation
 
