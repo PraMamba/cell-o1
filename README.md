@@ -1,5 +1,3 @@
-# Cell-o1: Training LLMs to Solve Single-Cell Reasoning Puzzles with Reinforcement Learning
-
 <h1 align="center">
 🤔 Cell-o1: Training LLMs to Solve Single-Cell Reasoning Puzzles with Reinforcement Learning
 </h1>
