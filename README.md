@@ -20,7 +20,7 @@
 - [⚡️ Quick Start](#3)
 - [🚀 Full Training Pipeline](#4)
   - [📦 Step 1: Preparing Preprocessed Data](#4-1) 
-  - [🧠 Step 2: Supervised Fine-Tuning (SFT)](#4-2)
+  - [🧠 Step 2: Supervised Fine-Tuning](#4-2)
   - [🎯 Step 3: Reinforcement Learning (GRPO / PPO)](#4-3)
     - [3.1  Preprocess Training Data](#5-1)
     - [3.2 Run GRPO Training](#5-2)
@@ -206,7 +206,7 @@ This script performs:
 
 
 <br>
-<h3 id="4-2">🧠 Step 2: Supervised Fine-Tuning (SFT)</h3>
+<h3 id="4-2">🧠 Step 2: Supervised Fine-Tuning</h3>
 
 Use the `reasoning` split to cold start the model with expert-like reasoning traces.
 
