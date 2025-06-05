@@ -134,6 +134,7 @@ We provide a benchmark dataset, ***CellPuzzles***, designed to mimic expert-styl
 Each instance contains a batch of cells from the same donor, where each cell must be assigned a unique type from a shared candidate set. 
 The model must reason over the full batch to ensure global consistency.
 
+<br>
 <p align="center">
   <img src="assets/cellpuzzles.png" alt="Data Preprocessing Pipeline" width="90%">
 </p>
