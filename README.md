@@ -11,7 +11,27 @@
   <a href="https://huggingface.co/ncbi/Cell-o1"><img src="https://img.shields.io/badge/HuggingFace-Model-FFBF00?style=for-the-badge&logo=huggingface&logoColor=white" alt="HuggingFace Model"></a>
 </p>
 
-<br>
+<be>
+
+
+## 📑 Contents
+- [Overview](#1)
+- [⚙️ Installation](#2)
+- [Quick Start](#3)
+- [Full Training Pipeline](#4)
+  - [Step 1: Download Preprocessed Data](#4-1) 
+  - [Step 2: Supervised Fine-Tuning (SFT)](#4-2)
+  - [Step 3: Reinforcement Learning (GRPO / PPO)](#4-3)
+    - [3.1  Preprocess Training Data](#5-1)
+    - [3.2 Run GRPO Training](#5-2)
+    - [3.3 Optional: Run PPO Instead](#5-3)
+    - [3.4 Convert RL Checkpoint to Hugging Face Format](#5-4)
+  - [Step 4: Run Inference on Test Set](#4-4)
+  - [Step 5: Evaluate Model Predictions](#4-5)
+- [About](#5)
+  - [Disclaimer](#5-1)
+  - [References](#5-2)
+  - [Acknowledgements](#5-3)
 
 
 <h2 id="1">📖 Overview</h2>
@@ -50,12 +70,15 @@ pip3 install flash-attn --no-build-isolation
 pip install wandb IPython matplotlib
 ```
 
+<h2 id="3">⚡ Quick Start</h2>
 
-<h2 id="3">🚀 Quick Start: Train with Preprocessed Data</h2>
-We provide preprocessed training and test data so you can get started immediately with model fine-tuning and reinforcement learning.
+
+
+<h2 id="4">🚀 Full Training Pipeline</h2>
+We provide preprocessed training and test data so you can get started immediately with model fine-tuning and reinforcement learning. 
 
 <br>
-<h3 id="3-1">📦 Step 1: Download Preprocessed Data</h3>
+<h3 id="4-1">📦 Step 1: Download Preprocessed Data</h3>
 
 You can load the dataset using the 🤗 `datasets` library:
 
@@ -88,7 +111,7 @@ with open("processed_data/test_data.json", "w") as f:
 - `test`: Held-out data for evaluation, formatted similarly to `train`.
 
 <br>
-<h3 id="3-2">🧠 Step 2: Supervised Fine-Tuning (SFT)</h3>
+<h3 id="4-2">🧠 Step 2: Supervised Fine-Tuning (SFT)</h3>
 
 Use the `reasoning` split to cold start the model with expert-like reasoning traces.
 
@@ -104,11 +127,11 @@ This will:
 > 📌 Edit `DATA_PATH` in sft.sh if your file path differs from the default.
 
 <br>
-<h3 id="3-3">🎯 Step 3: Reinforcement Learning (GRPO / PPO)</h3>
+<h3 id="4-3">🎯 Step 3: Reinforcement Learning (GRPO / PPO)</h3>
 
 Use the `train` split (`processed_data/grpo_train.json`) to train the model with batch-level rewards.
 
-<h4 id="4-1">🧱 3.1  Preprocess Training Data </h4>
+<h4 id="5-1">🧱 3.1  Preprocess Training Data </h4>
 Convert the raw JSON data into Parquet format:
 
 ```bash
@@ -120,7 +143,7 @@ python examples/data_preprocess/cello1.py \
 
 This creates `.parquet` files in `parquet_output/`, used for training and validation.
 
-<h4 id="4-2">🏋️‍♂️ 3.2  Run GRPO Training </h4>
+<h4 id="5-2">🏋️‍♂️ 3.2  Run GRPO Training </h4>
 
 Launch GRPO reinforcement learning:
 
@@ -132,7 +155,7 @@ bash examples/grpo_trainer/run_cello1_grpo.sh
 > - `train_files` / `val_files`: your .parquet paths
 > - `model.path`: path to the merged SFT checkpoint from Step 2
 
-<h4 id="4-3">🔁 3.3 Optional: Run PPO Instead </h4>
+<h4 id="5-3">🔁 3.3 Optional: Run PPO Instead </h4>
 
 To use PPO instead of GRPO:
 
@@ -140,7 +163,7 @@ To use PPO instead of GRPO:
 bash examples/ppo_trainer/run_cello1_ppo.sh
 ```
 
-<h4 id="4-4">📤 3.4 Convert RL Checkpoint to Hugging Face Format </h4>
+<h4 id="5-4">📤 3.4 Convert RL Checkpoint to Hugging Face Format </h4>
 
 After RL training, if your model is saved in FSDP (Fully Sharded Data Parallel) format, you can convert it to Hugging Face format using:
 
@@ -155,7 +178,7 @@ python scripts/convert_fsdp_to_hf.py \
 - **Third argument**: output directory to save the converted Hugging Face model (e.g., `global_step_2500/huggingface`)
 
 <br>
-<h3 id="3-4">🧪 Step 4: Run Inference on Test Set</h3>
+<h3 id="4-4">🧪 Step 4: Run Inference on Test Set</h3>
 
 After converting your model to Hugging Face format, run inference using `scripts/test.py`.
 This script supports multi-shard decoding via `--n` (total shards) and `--i` (shard index).
@@ -176,9 +199,18 @@ CUDA_VISIBLE_DEVICES=0 python scripts/test.py \
 - `--dataset`: Path to the test set JSON file (e.g., `processed_data/test_data.json`)
 
 > 📌 To run multi-shard decoding (e.g., 16 shards across 8 GPUs), you can launch multiple instances of this script with different `--i` and `CUDA_VISIBLE_DEVICES`.
+> For example, to run 4 shards across 2 GPUs:
+> ```bash
+> # Example: Run 4 shards across 2 GPUs (2 processes per GPU)
+> CUDA_VISIBLE_DEVICES=0 python scripts/test.py --n 4 --i 0 --llm_name path/to/model --folder prediction_output --dataset processed_data/test_data.json &
+> CUDA_VISIBLE_DEVICES=0 python scripts/test.py --n 4 --i 1 --llm_name path/to/model --folder prediction_output --dataset processed_data/test_data.json &
+> CUDA_VISIBLE_DEVICES=1 python scripts/test.py --n 4 --i 2 --llm_name path/to/model --folder prediction_output --dataset processed_data/test_data.json &
+> CUDA_VISIBLE_DEVICES=1 python scripts/test.py --n 4 --i 3 --llm_name path/to/model --folder prediction_output --dataset processed_data/test_data.json &
+> wait
+> ```
 
 <br>
-<h3 id="3-5">📊 Step 5: Evaluate Model Predictions</h3>
+<h3 id="4-5">📊 Step 5: Evaluate Model Predictions</h3>
 
 To run the evaluation:
 
@@ -197,7 +229,12 @@ It reports:
 
 ---
 
-<h2 id="5-1"> 📚 References</h2>
+<h2 id="5">About</h2>
+
+<h2 id="5-1"> 📜 Disclaimer</h2>
+
+
+<h2 id="5-2"> 📚 References</h2>
 If you use our repository, please cite the following related paper:
 
 ```
@@ -209,7 +246,7 @@ If you use our repository, please cite the following related paper:
 }
 ```
 
-<h2 id="5-2"> 🫱🏻‍🫲 Acknowledgements</h2>
+<h2 id="5-3"> 🫱🏻‍🫲 Acknowledgements</h2>
 
 We appreciate [verl](https://github.com/volcengine/verl), [TinyZero](https://github.com/Jiayi-Pan/TinyZero), [Search-R1](https://github.com/PeterGriffinJin/Search-R1), [ReCall](https://github.com/Agent-RL/ReCall), and many other related works for their open-source contributions. The logo of the model is automatically generated by [GPT-4o](https://openai.com/index/hello-gpt-4o/).
 
