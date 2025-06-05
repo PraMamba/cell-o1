@@ -41,7 +41,6 @@ def main():
         "Using both the gene expression data and donor information, determine the correct cell type for each cell. "
         "You will also receive a list of N candidate cell types, and each candidate must be assigned to exactly one cell. "
         "Ensure that you consider all cells and candidate types together, rather than annotating each cell individually. "
-        "You must output exactly \"<think>...</think>\\n<answer>...</answer>.\" "
         "Include your detailed reasoning within <think> and </think> tags, and provide your final answer within <answer> and </answer> tags. "
         "The final answer should be a single string listing the assigned cell types in order, separated by ' | '."
     )
