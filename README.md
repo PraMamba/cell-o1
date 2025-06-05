@@ -227,7 +227,6 @@ It reports:
 - **Prediction Length**: average number of tokens in each prediction.
 
 
----
 
 <h2 id="5">🗺️ Project Info</h2>
 
