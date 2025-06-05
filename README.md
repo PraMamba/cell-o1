@@ -19,7 +19,7 @@
 - [⚙️ Installation](#2)
 - [⚡️ Quick Start](#3)
 - [🚀 Full Training Pipeline](#4)
-  - [📦 Step 1: Download Preprocessed Data](#4-1) 
+  - [📦 Step 1: Preparing Preprocessed Data](#4-1) 
   - [🧠 Step 2: Supervised Fine-Tuning (SFT)](#4-2)
   - [🎯 Step 3: Reinforcement Learning (GRPO / PPO)](#4-3)
     - [3.1  Preprocess Training Data](#5-1)
@@ -129,7 +129,23 @@ print(assistant_reply)
 We provide preprocessed training and test data so you can get started immediately with model fine-tuning and reinforcement learning. 
 
 <br>
-<h3 id="4-1">📦 Step 1: Download Preprocessed Data</h3>
+<h3 id="4-1">📦 Step 1: Preparing Preprocessed Data</h3>
+We provide a benchmark dataset, ***CellPuzzles***, designed to mimic expert-style reasoning in single-cell annotation.
+Each instance contains a batch of cells from the same donor, where each cell must be assigned a unique type from a shared candidate set. 
+The model must reason over the full batch to ensure global consistency.
+
+<p align="center">
+  <img src="assets/cellpuzzles.png" alt="Data Preprocessing Pipeline" width="90%">
+</p>
+
+
+We provide two options for data preparation. You can either:
+
+- ✅ **Option A**: Directly download our preprocessed dataset ***CellPuzzles*** from Hugging Face.
+- ✅ **Option B**: Start from raw `.h5ad` files and run the full preprocessing pipeline.
+
+
+#### ✅ Option A: Download Preprocessed Data
 
 You can load the dataset using the 🤗 `datasets` library:
 
@@ -160,6 +176,32 @@ with open("processed_data/test_data.json", "w") as f:
 - `train`: Raw QA-style data used for RL, containing both user prompts and gold answers.
 
 - `test`: Held-out data for evaluation, formatted similarly to `train`.
+
+
+#### ✅ Option B: Build from Raw `.h5ad` Files
+
+If you'd like to reproduce the preprocessing steps from scratch:
+
+```bash
+cd data
+bash run_pipeline.sh
+```
+> 📌 Before running, edit the top section of `run_pipeline.sh` to specify your paths:
+> ```
+> # Path to input raw h5ad files
+> RAW_H5AD_DIR="path/to/h5ad_dir"
+>
+> # Output directories
+> CELL_JSON_DIR="path/to/output_cell_metadata"
+> BATCH_QA_DIR="path/to/output_batch_qa"
+> FINAL_OUTPUT_DIR="path/to/final_llm_input"
+> ```
+
+This script performs:
+- Extracts cell-level metadata and top genes from `.h5ad`.
+- Groups cells into batch-level QA format (N cells per batch).
+- Converts QA into LLM-compatible format and splits into `train` / `test`.
+
 
 <br>
 <h3 id="4-2">🧠 Step 2: Supervised Fine-Tuning (SFT)</h3>
