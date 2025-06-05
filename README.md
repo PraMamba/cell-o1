@@ -11,7 +11,7 @@
   <a href="https://huggingface.co/ncbi/Cell-o1"><img src="https://img.shields.io/badge/HuggingFace-Model-FFBF00?style=for-the-badge&logo=huggingface&logoColor=white" alt="HuggingFace Model"></a>
 </p>
 
-<be>
+<br>
 
 
 ## 📑 Contents
@@ -130,6 +130,7 @@ We provide preprocessed training and test data so you can get started immediatel
 
 <br>
 <h3 id="4-1">📦 Step 1: Preparing Preprocessed Data</h3>
+
 We provide a benchmark dataset, ***CellPuzzles***, designed to mimic expert-style reasoning in single-cell annotation.
 Each instance contains a batch of cells from the same donor, where each cell must be assigned a unique type from a shared candidate set. 
 The model must reason over the full batch to ensure global consistency.
