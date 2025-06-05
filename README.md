@@ -72,7 +72,58 @@ pip install wandb IPython matplotlib
 
 <h2 id="3">⚡️ Quick Start</h2>
 
+The following example demonstrates how to quickly run Cell-o1 on a batch-level cell type annotation task using structured input.
+The model takes a system message with task instructions and a user message describing multiple cells and candidate cell types.
 
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+
+# 1. Load the model and tokenizer from the Hugging Face Hub
+model_name = "ncbi/Cell-o1"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+generator = pipeline("text-generation", model=model, tokenizer=tokenizer)
+
+# 2. A minimal batch example with 3 cells and 3 candidate types
+example = {
+    "system_msg": (
+        "You are an expert assistant specialized in cell type annotation. "
+        "You will be given a batch of N cells from the same donor, where each cell represents a unique cell type. "
+        "For each cell, the top expressed genes are provided in descending order of expression. "
+        "Using both the gene expression data and donor information, determine the correct cell type for each cell. "
+        "You will also receive a list of N candidate cell types, and each candidate must be assigned to exactly one cell. "
+        "Ensure that you consider all cells and candidate types together, rather than annotating each cell individually. "
+        "Include your detailed reasoning within <think> and </think> tags, and provide your final answer within <answer> and </answer> tags. "
+        "The final answer should be a single string listing the assigned cell types in order, separated by ' | '."
+    ),
+
+    "user_msg": (
+        "Context: The cell is from a female at the 73-year-old stage, originating from the lung. The patient has been diagnosed with chronic obstructive pulmonary disease. The patient is a smoker. There is no cancer present. \n\n"
+        "Cell 1: MT2A, ACTB, MT1X, MTATP6P29, MYL9, MTND4LP30, CRIP1, DSTN, MTND2P13, MTCO2P22, S100A6, MTCYBP19, MALAT1, VIM, RPLP1, RGS5, TPT1, LGALS1, TPM2, MTND3P6, MTND1P22, PTMA, TMSB4X, STEAP1B, MT1M, LPP, RPL21\n"
+        "Cell 2: MALAT1, FTL, MTCO2P22, TMSB4X, B2M, MTND4LP30, IL6ST, RPS19, RBFOX2, CCSER1, RPL41, RPS27, RPL10, ACTB, MTATP6P29, MTND2P13, RPS12, STEAP1B, RPL13A, S100A4, RPL34, TMSB10, RPL28, RPL32, RPL39, RPL13\n"
+        "Cell 3: SCGB3A1, SCGB1A1, SLPI, WFDC2, TPT1, MTCO2P22, B2M, RPS18, RPS4X, RPS6, MTND4LP30, RPL34, RPS14, RPL31, STEAP1B, LCN2, RPLP1, IL6ST, S100A6, RPL21, RPL37A, ADGRL3, RPL37, RBFOX2, RPL41, RARRES1, RPL19\n\n"
+        "Match the cells above to one of the following cell types:\n"
+        "non-classical monocyte\nepithelial cell of lung\nsmooth muscle cell"
+    )
+}
+
+# 3. Convert to chat-style messages
+messages = [
+    {"role": "system", "content": example["system_msg"]},
+    {"role": "user",   "content": example["user_msg"]}
+]
+
+# 4. Run inference
+response = generator(
+    messages,
+    max_new_tokens=1000,     # increase if your reasoning chain is longer
+    do_sample=False         # deterministic decoding
+)[0]["generated_text"]
+
+# 5. Print the model’s reply (<think> + <answer>)
+assistant_reply = response[-1]["content"] if isinstance(response, list) else response
+print(assistant_reply)
+```
 
 <h2 id="4">🚀 Full Training Pipeline</h2>
 We provide preprocessed training and test data so you can get started immediately with model fine-tuning and reinforcement learning. 
