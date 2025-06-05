@@ -28,7 +28,7 @@
     - [3.4 Convert RL Checkpoint to Hugging Face Format](#5-4)
   - [🧪 Step 4: Run Inference on Test Set](#4-4)
   - [📊 Step 5: Evaluate Model Predictions](#4-5)
-- [About](#5)
+- [🗺️ Project Info](#5)
   - [📜 Disclaimer](#5-1)
   - [📚 References](#5-2)
   - [🫱🏻‍🫲 Acknowledgements](#5-3)
@@ -229,7 +229,7 @@ It reports:
 
 ---
 
-<h2 id="5">About</h2>
+<h2 id="5">🗺️ Project Info</h2>
 
 <h2 id="5-1"> 📜 Disclaimer</h2>
 
