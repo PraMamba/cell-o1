@@ -15,23 +15,23 @@
 
 
 ## 📑 Contents
-- [Overview](#1)
+- [📖 Overview](#1)
 - [⚙️ Installation](#2)
-- [Quick Start](#3)
-- [Full Training Pipeline](#4)
-  - [Step 1: Download Preprocessed Data](#4-1) 
-  - [Step 2: Supervised Fine-Tuning (SFT)](#4-2)
-  - [Step 3: Reinforcement Learning (GRPO / PPO)](#4-3)
+- [⚡️ Quick Start](#3)
+- [🚀 Full Training Pipeline](#4)
+  - [📦 Step 1: Download Preprocessed Data](#4-1) 
+  - [🧠 Step 2: Supervised Fine-Tuning (SFT)](#4-2)
+  - [🎯 Step 3: Reinforcement Learning (GRPO / PPO)](#4-3)
     - [3.1  Preprocess Training Data](#5-1)
     - [3.2 Run GRPO Training](#5-2)
     - [3.3 Optional: Run PPO Instead](#5-3)
     - [3.4 Convert RL Checkpoint to Hugging Face Format](#5-4)
-  - [Step 4: Run Inference on Test Set](#4-4)
-  - [Step 5: Evaluate Model Predictions](#4-5)
+  - [🧪 Step 4: Run Inference on Test Set](#4-4)
+  - [📊 Step 5: Evaluate Model Predictions](#4-5)
 - [About](#5)
-  - [Disclaimer](#5-1)
-  - [References](#5-2)
-  - [Acknowledgements](#5-3)
+  - [📜 Disclaimer](#5-1)
+  - [📚 References](#5-2)
+  - [🫱🏻‍🫲 Acknowledgements](#5-3)
 
 
 <h2 id="1">📖 Overview</h2>
@@ -70,7 +70,7 @@ pip3 install flash-attn --no-build-isolation
 pip install wandb IPython matplotlib
 ```
 
-<h2 id="3">⚡ Quick Start</h2>
+<h2 id="3">⚡️ Quick Start</h2>
 
 
 
