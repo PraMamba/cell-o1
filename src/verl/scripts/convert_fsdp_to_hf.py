@@ -12,7 +12,7 @@ def main(fsdp_checkpoint_path, huggingface_model_path, output_path):
 
     world_size = 8
     for rank in range(world_size):
-        filepath = f"{fsdp_checkpoint_path}/model_world_size_{world_size}_rank_{rank}.pt"
+        filepath = f"{fsdp_checkpoint_path}/actor/model_world_size_{world_size}_rank_{rank}.pt"
         print('loading', filepath)
         this_state_dict = torch.load(filepath)
         for key, value in this_state_dict.items():
