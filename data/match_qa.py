@@ -83,9 +83,10 @@ def generate_pairs_for_file(in_path, out_path):
         for gkey, records in donor_groups.items():
             types = list({r["cell_type"] for r in records if r.get("cell_type")})
             max_n = min(len(types), MAX_CELLS_PER_QA)
-            if max_n < 8:
+            # Lower the minimum requirement from 8 to 3 to support smaller datasets
+            if max_n < 3:
                 continue
-            valid_ns = [n for n in range(8, max_n + 1) if remaining[n] > 0]
+            valid_ns = [n for n in range(3, max_n + 1) if remaining[n] > 0]
             if not valid_ns:
                 continue
             n = random.choice(valid_ns)

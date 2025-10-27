@@ -5,16 +5,16 @@ set -x  # Print each command
 # ------------------------- Configurable Paths -------------------------
 
 # Path to your input raw .h5ad files
-RAW_H5AD_DIR="path/to/raw_h5ad_dir"
+RAW_H5AD_DIR="/data/Mamba/Project/Single_Cell/Benchmark/Cell-O1/Cell_Type/A013"
 
 # Directory to save single-cell level JSON output (Step 1)
-CELL_JSON_DIR="path/to/output_cell_metadata"
+CELL_JSON_DIR="/data/Mamba/Project/Single_Cell/Benchmark/Cell-O1/Cell_Type/A013/cell_metadata"
 
 # Directory to save QA-formatted batch data (Step 2)
-BATCH_QA_DIR="path/to/output_batch_qa"
+BATCH_QA_DIR="/data/Mamba/Project/Single_Cell/Benchmark/Cell-O1/Cell_Type/A013/batch_qa"
 
 # Directory to save final LLM-ready data (Step 3)
-FINAL_OUTPUT_DIR="path/to/final_llm_input"
+FINAL_OUTPUT_DIR="/data/Mamba/Project/Single_Cell/Benchmark/Cell-O1/Cell_Type/A013/final_llm_input"
 
 # Maximum number of test samples for stratified split (Step 3)
 MAX_TEST_SAMPLES=1100

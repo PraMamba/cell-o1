@@ -19,7 +19,8 @@ from functools import partial
 
 
 # ========== Constants ==========
-MANDATORY_FIELDS = ["disease", "tissue", "sex", "development_stage", "self_reported_ethnicity"]
+# Basic fields that should be checked (will be used if available)
+BASIC_FIELDS = ["disease", "tissue", "sex", "development_stage", "self_reported_ethnicity", "age"]
 
 EXTRA_FIELDS_MAP = {
     "copd": ["ever_smoker", "tumor_stage"],
@@ -71,10 +72,19 @@ def get_top_genes(adata, cell_idx, top_n=50):
     Uses a partition-based method (np.argpartition) to efficiently select the top N genes.
     Returns a list of gene names sorted in descending order of expression.
     """
-    if "feature_name" not in adata.var.columns:
-        raise KeyError("Missing 'feature_name' column in adata.var. Cannot extract gene names.")
+    # Try different possible gene name columns
+    gene_col = None
+    for col in ["feature_name", "gene_name", "gene_symbols", "symbol"]:
+        if col in adata.var.columns:
+            gene_col = col
+            break
+    
+    # If no column found, use var index
+    if gene_col is None:
+        gene_names = adata.var.index.tolist()
+    else:
+        gene_names = adata.var[gene_col].tolist()
 
-    gene_names = adata.var["feature_name"].tolist()
     row_expr = adata.X[cell_idx, :]
 
     # Convert to a dense array if sparse
@@ -109,6 +119,7 @@ def build_prompt(row_dict, top_genes):
     parts = []
     sex = row_dict.get("sex")
     dev_stage = row_dict.get("development_stage")
+    age = row_dict.get("age")
     ethnicity = row_dict.get("self_reported_ethnicity")
     tissue = row_dict.get("tissue")
     disease = row_dict.get("disease")
@@ -117,6 +128,8 @@ def build_prompt(row_dict, top_genes):
     intro = "The cell is from"
     if sex:
         intro += f" a {sex}"
+    if age:
+        intro += f" aged {age}"
     if dev_stage:
         intro += f" at the {dev_stage}"
     if ethnicity:
@@ -302,35 +315,29 @@ def build_prompt(row_dict, top_genes):
 def process_h5ad(h5ad_path, output_path, max_cells):
     """
     Process a single .h5ad file according to the rules:
-      1) Filter to keep only cells with suspension_type 'cell'
+      1) Filter to keep only cells with suspension_type 'cell' (if available)
       2) For each cell, gather top 50 genes, collect context fields, and build a prompt
       3) Save the output as JSON
     """
     print(f"[INFO] Processing {h5ad_path} ...")
     adata = anndata.read_h5ad(h5ad_path)
 
-    # Skip if no valid 'cell' entries
+    # Filter by suspension_type if available
     if "suspension_type" in adata.obs:
         mask_cell = adata.obs["suspension_type"] == "cell"
         if mask_cell.sum() == 0:
             print(f"[SKIP] {h5ad_path} has no 'cell' entries. Skipping.")
             return  # Skip this file entirely
         adata = adata[mask_cell, :]
+        print(f"[INFO] Filtered to {adata.n_obs} cells with suspension_type='cell'")
     else:
-        print(f"[SKIP] {h5ad_path} has no 'suspension_type' column. Skipping.")
-        return  # Skip this file entirely
+        print(f"[INFO] No 'suspension_type' column found, processing all {adata.n_obs} cells")
     
     # Randomly subsample cells if total exceeds max_cells
     if adata.n_obs > max_cells:
         sampled_indices = np.random.choice(adata.n_obs, size=max_cells, replace=False)
         adata = adata[sampled_indices, :]
-
-    # Filter: keep only cells with 'suspension_type' equal to 'cell' (if available)
-    if "suspension_type" in adata.obs:
-        mask_cell = adata.obs["suspension_type"] == "cell"
-        adata = adata[mask_cell, :]
-    else:
-        print("Warning: 'suspension_type' not found, no filtering applied.")
+        print(f"[INFO] Subsampled to {adata.n_obs} cells")
 
     # Identify the folder name to determine extra fields
     folder_name = os.path.basename(os.path.dirname(h5ad_path))
@@ -340,12 +347,12 @@ def process_h5ad(h5ad_path, output_path, max_cells):
     for i in tqdm(range(adata.n_obs), desc=f"Cells in {folder_name}", unit="cell"):
         row = adata.obs.iloc[i]
 
-        # Collect mandatory fields
+        # Collect basic fields
         row_dict = {}
-        for mf in MANDATORY_FIELDS:
-            val = row.get(mf, None)
+        for bf in BASIC_FIELDS:
+            val = row.get(bf, None)
             if is_valid_value(val):
-                row_dict[mf] = str(val)
+                row_dict[bf] = str(val)
 
         # Collect extra fields based on folder name
         for ef in extra_fields:
