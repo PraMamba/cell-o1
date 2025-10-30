@@ -27,6 +27,8 @@ from datetime import datetime
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 
+from celltype_standardizer import CellTypeStandardizer, extract_dataset_id_from_path, save_unmapped_report
+
 
 def load_qa_data(input_file: str) -> List[Dict]:
     """Load QA pairs from JSON file."""
@@ -143,6 +145,12 @@ def run_evaluation(
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     qa_data = load_qa_data(input_file)
+    
+    # Initialize cell type standardizer
+    standardizer = CellTypeStandardizer()
+    
+    # Extract dataset ID from input file path
+    dataset_id = extract_dataset_id_from_path(input_file)
 
     # System message for batch + open-ended setting (no candidate list mentioned)
     system_msg = (
@@ -179,6 +187,7 @@ def run_evaluation(
     results = []
     predictions = []
     ground_truths = []
+    unmapped_records = []  # Track unmapped cell types
 
     # Prepare all messages at once for batch processing
     all_messages = [prepare_messages(qa_item, system_msg) for qa_item in qa_data]
@@ -211,38 +220,73 @@ def run_evaluation(
                 else:
                     assistant_reply = str(response)
 
-                predicted_answer = extract_answer_from_response(assistant_reply)
-                ground_truth = qa_item["answer"]
+                predicted_answer_raw = extract_answer_from_response(assistant_reply)
+                ground_truth_raw = qa_item["answer"]
+                
+                # Standardize cell type names
+                ground_truth_std, gt_unmapped = standardizer.standardize_batch_celltype(ground_truth_raw)
+                predicted_answer_std, pred_unmapped = standardizer.standardize_batch_celltype(predicted_answer_raw)
+                
+                # Track unmapped types
+                for unmapped_type in gt_unmapped:
+                    unmapped_records.append({
+                        "index": idx,
+                        "source": "ground_truth",
+                        "original_type": unmapped_type,
+                        "full_answer": ground_truth_raw
+                    })
+                for unmapped_type in pred_unmapped:
+                    unmapped_records.append({
+                        "index": idx,
+                        "source": "predicted_answer",
+                        "original_type": unmapped_type,
+                        "full_answer": predicted_answer_raw
+                    })
 
                 result_item = {
+                    "model_name": model_name,
+                    "dataset_id": dataset_id,
                     "index": idx,
+                    "task_type": "cell type",
                     "task_variant": "batch_openended",
-                    "question_original": qa_item["question"],
-                    "question_modified": messages[1]["content"],
-                    "ground_truth": ground_truth,
-                    "predicted_answer": predicted_answer,
+                    "question": messages[1]["content"],
+                    "ground_truth": ground_truth_std,
+                    "predicted_answer": predicted_answer_std,
                     "full_response": assistant_reply,
                     "group": qa_item.get("group", "unknown")
                 }
                 results.append(result_item)
-                predictions.append(predicted_answer)
-                ground_truths.append(ground_truth)
+                predictions.append(predicted_answer_std)
+                ground_truths.append(ground_truth_std)
 
             except Exception as e:
                 print(f"\n[ERROR] Failed to process result for sample {idx}: {e}")
+                ground_truth_raw = qa_item["answer"]
+                ground_truth_std, gt_unmapped = standardizer.standardize_batch_celltype(ground_truth_raw)
+                
+                for unmapped_type in gt_unmapped:
+                    unmapped_records.append({
+                        "index": idx,
+                        "source": "ground_truth",
+                        "original_type": unmapped_type,
+                        "full_answer": ground_truth_raw
+                    })
+                
                 result_item = {
+                    "model_name": model_name,
+                    "dataset_id": dataset_id,
                     "index": idx,
+                    "task_type": "cell type",
                     "task_variant": "batch_openended",
-                    "question_original": qa_item["question"],
-                    "question_modified": messages[1]["content"] if len(messages) > 1 else "",
-                    "ground_truth": qa_item["answer"],
+                    "question": messages[1]["content"] if len(messages) > 1 else "",
+                    "ground_truth": ground_truth_std,
                     "predicted_answer": "",
                     "full_response": f"ERROR: {str(e)}",
                     "group": qa_item.get("group", "unknown")
                 }
                 results.append(result_item)
                 predictions.append("")
-                ground_truths.append(qa_item["answer"])
+                ground_truths.append(ground_truth_std)
 
     except Exception as e:
         print(f"\n[ERROR] Critical error during batch processing: {e}")
@@ -260,27 +304,49 @@ def run_evaluation(
                     assistant_reply = response[0]["generated_text"]
                 else:
                     assistant_reply = str(response)
-                predicted_answer = extract_answer_from_response(assistant_reply)
-                ground_truth = qa_item["answer"]
+                predicted_answer_raw = extract_answer_from_response(assistant_reply)
+                ground_truth_raw = qa_item["answer"]
             except Exception as e2:
                 print(f"\n[ERROR] Failed to process sample {idx}: {e2}")
                 assistant_reply = f"ERROR: {str(e2)}"
-                predicted_answer = ""
-                ground_truth = qa_item["answer"]
+                predicted_answer_raw = ""
+                ground_truth_raw = qa_item["answer"]
+            
+            # Standardize cell type names
+            ground_truth_std, gt_unmapped = standardizer.standardize_batch_celltype(ground_truth_raw)
+            predicted_answer_std, pred_unmapped = standardizer.standardize_batch_celltype(predicted_answer_raw)
+            
+            # Track unmapped types
+            for unmapped_type in gt_unmapped:
+                unmapped_records.append({
+                    "index": idx,
+                    "source": "ground_truth",
+                    "original_type": unmapped_type,
+                    "full_answer": ground_truth_raw
+                })
+            for unmapped_type in pred_unmapped:
+                unmapped_records.append({
+                    "index": idx,
+                    "source": "predicted_answer",
+                    "original_type": unmapped_type,
+                    "full_answer": predicted_answer_raw
+                })
 
             result_item = {
+                "model_name": model_name,
+                "dataset_id": dataset_id,
                 "index": idx,
+                "task_type": "cell type",
                 "task_variant": "batch_openended",
-                "question_original": qa_item["question"],
-                "question_modified": messages[1]["content"] if len(messages) > 1 else "",
-                "ground_truth": ground_truth,
-                "predicted_answer": predicted_answer,
+                "question": messages[1]["content"] if len(messages) > 1 else "",
+                "ground_truth": ground_truth_std,
+                "predicted_answer": predicted_answer_std,
                 "full_response": assistant_reply,
                 "group": qa_item.get("group", "unknown")
             }
             results.append(result_item)
-            predictions.append(predicted_answer)
-            ground_truths.append(ground_truth)
+            predictions.append(predicted_answer_std)
+            ground_truths.append(ground_truth_std)
 
     metrics = calculate_metrics(predictions, ground_truths)
 
@@ -303,6 +369,9 @@ def run_evaluation(
     with open(metrics_file, 'w', encoding='utf-8') as f:
         json.dump(metrics, f, indent=2)
     print(f"[INFO] Metrics saved to: {metrics_file}")
+    
+    # Save unmapped cell types report
+    save_unmapped_report(unmapped_records, output_dir, "batch_openended", timestamp)
 
     return metrics, results
 

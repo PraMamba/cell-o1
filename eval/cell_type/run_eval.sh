@@ -1,21 +1,23 @@
 #!/bin/bash
 set -eu
 
-export CUDA_VISIBLE_DEVICES=6
+export CUDA_VISIBLE_DEVICES=7
 
 source ~/.bashrc
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate Axolotl
 
+cd ~/cell-o1/eval/cell_type
+
 # ========================= Configuration =========================
 
 # Task type selection
 # Options: batch_constrained | batch_openended | singlecell_constrained | singlecell_openended | all
-TASK_TYPE="batch_constrained"
+TASK_TYPE="batch_openended"
 
 # Base configuration
-INPUT_QA_FILE="/data/Mamba/Project/Single_Cell/Benchmark/Cell-O1/Cell_Type/A013/batch_qa/A013_processed_sampled_w_cell2sentence_qa.json"
-BASE_OUTPUT_DIR="/data/Mamba/Project/Single_Cell/Benchmark/Cell-O1/Cell_Type/A013/eval_results"
+INPUT_QA_FILE="/data/Mamba/Project/Single_Cell/Benchmark/Cell_Type/Cell-O1/A013/processed_data/batch_qa/A013_processed_sampled_w_cell2sentence_qa.json"
+BASE_OUTPUT_DIR="/data/Mamba/Project/Single_Cell/Benchmark/Cell_Type/Cell-O1/A013/eval_results_v1"
 MODEL_NAME="ncbi/Cell-o1"
 DEVICE="cuda"
 BATCH_SIZE=32
@@ -41,9 +43,6 @@ echo "[INFO] Batch size:       $BATCH_SIZE"
 echo "[INFO] Max new tokens:   $MAX_NEW_TOKENS"
 echo "[INFO] Device:           $DEVICE"
 echo "============================================================"
-echo ""
-
-cd /home/scbjtfy/cell-o1/eval/cell_type
 
 # Function to run evaluation
 run_evaluation() {
@@ -56,12 +55,12 @@ run_evaluation() {
     echo ""
     echo "[INFO] Running $task evaluation..."
     python "$script" \
-        --input_file "$INPUT_QA_FILE" \
-        --output_dir "$output_dir" \
-        --model_name "$MODEL_NAME" \
+        --input_file $INPUT_QA_FILE \
+        --output_dir $output_dir \
+        --model_name $MODEL_NAME \
         --max_new_tokens $max_tokens \
         --batch_size $batch_size \
-        --device "$DEVICE"
+        --device $DEVICE
     
     if [ $? -eq 0 ]; then
         echo "[SUCCESS] $task evaluation completed."
