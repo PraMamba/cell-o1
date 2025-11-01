@@ -39,76 +39,6 @@ def load_qa_data(input_file: str) -> List[Dict]:
     return data
 
 
-def decompose_batch_to_singlecells(qa_item: Dict) -> List[Dict]:
-    """
-    Decompose a batch-level QA into multiple single-cell QAs.
-    Remove candidate list for open-ended setting.
-
-    Args:
-        qa_item: Original batch QA with multiple cells
-
-    Returns:
-        List of single-cell QA items, one per cell
-    """
-    question = qa_item["question"]
-    answer = qa_item["answer"]
-
-    # Extract context (everything before the cell listings)
-    lines = question.split('\n')
-    context_lines = []
-    cell_lines = []
-
-    in_cells = False
-
-    for line in lines:
-        if line.strip().startswith("Cell "):
-            in_cells = True
-            cell_lines.append(line)
-        elif "Match the cells" in line or "match the cells" in line.lower():
-            # Skip candidate list section for open-ended setting
-            break
-        elif not in_cells:
-            context_lines.append(line)
-        else:
-            cell_lines.append(line)
-
-    context = '\n'.join(context_lines).strip()
-
-    # Parse individual cells
-    cells = []
-    current_cell = []
-    for line in cell_lines:
-        if line.strip().startswith("Cell "):
-            if current_cell:
-                cells.append('\n'.join(current_cell))
-            current_cell = [line]
-        elif line.strip():
-            current_cell.append(line)
-    if current_cell:
-        cells.append('\n'.join(current_cell))
-
-    # Parse ground truth answers
-    answer_types = [t.strip() for t in answer.split('|')]
-
-    # Create single-cell QA items
-    singlecell_qas = []
-    for i, (cell, cell_type) in enumerate(zip(cells, answer_types)):
-        # Construct single-cell question WITHOUT candidate list
-        sc_question = f"{context}\n\n{cell}\n\nDetermine the correct cell type for the cell above based on the gene expression pattern and donor context."
-
-        sc_qa = {
-            "question": sc_question,
-            "answer": cell_type,
-            "original_batch_index": qa_item.get("index", -1),
-            "cell_index_in_batch": i,
-            "total_cells_in_batch": len(cells),
-            "group": qa_item.get("group", "unknown")
-        }
-        singlecell_qas.append(sc_qa)
-
-    return singlecell_qas
-
-
 def prepare_messages(qa_item: Dict, system_msg: str) -> List[Dict]:
     """Convert a single-cell QA item to chat-style messages."""
     messages = [
@@ -150,15 +80,14 @@ def calculate_metrics(predictions: List[str], ground_truths: List[str], decompos
         if pred.lower().strip() == gt.lower().strip():
             cell_level_correct += 1
 
-    # Batch-level metrics: group predictions by original batch
+    # Batch-level metrics: group predictions by group field
     batch_groups = {}
     for i, (pred, gt, item) in enumerate(zip(predictions, ground_truths, decomposed_data)):
-        batch_idx = item["original_batch_index"]
+        batch_idx = item.get("group", f"batch_{i}")  # Use group field if available
         if batch_idx not in batch_groups:
             batch_groups[batch_idx] = {
                 "predictions": [],
-                "ground_truths": [],
-                "total_cells": item["total_cells_in_batch"]
+                "ground_truths": []
             }
         batch_groups[batch_idx]["predictions"].append(pred)
         batch_groups[batch_idx]["ground_truths"].append(gt)
@@ -206,14 +135,9 @@ def run_evaluation(
     # Extract dataset ID from input file path
     dataset_id = extract_dataset_id_from_path(input_file)
 
-    # Decompose batches into single cells
-    print(f"[INFO] Decomposing {len(qa_data)} batches into single-cell tasks...")
-    all_singlecell_qas = []
-    for qa_item in qa_data:
-        singlecell_qas = decompose_batch_to_singlecells(qa_item)
-        all_singlecell_qas.extend(singlecell_qas)
-
-    print(f"[INFO] Total single-cell tasks: {len(all_singlecell_qas)}")
+    # Data should already be in single-cell format (processed by pipeline)
+    all_singlecell_qas = qa_data
+    print(f"[INFO] Loaded {len(all_singlecell_qas)} single-cell tasks (already processed by pipeline)")
 
     # System message for single-cell + open-ended setting
     system_msg = (
@@ -225,7 +149,6 @@ def run_evaluation(
     )
 
     print(f"\n[INFO] Task Variant: Single-cell + Open-ended")
-    print(f"[INFO] No candidate lists will be provided")
     print(f"[INFO] Loading model: {model_name}")
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -314,7 +237,7 @@ def run_evaluation(
                     "ground_truth": ground_truth_std,
                     "predicted_answer": predicted_answer_std,
                     "full_response": assistant_reply,
-                    "group": qa_item["group"]
+                    "group": qa_item.get("group", "")
                 }
                 results.append(result_item)
                 predictions.append(predicted_answer_std)
@@ -343,7 +266,7 @@ def run_evaluation(
                     "ground_truth": ground_truth_std,
                     "predicted_answer": "",
                     "full_response": f"ERROR: {str(e)}",
-                    "group": qa_item["group"]
+                    "group": qa_item.get("group", "")
                 }
                 results.append(result_item)
                 predictions.append("")
@@ -403,7 +326,7 @@ def run_evaluation(
                 "ground_truth": ground_truth_std,
                 "predicted_answer": predicted_answer_std,
                 "full_response": assistant_reply,
-                "group": qa_item["group"]
+                "group": qa_item.get("group", "")
             }
             results.append(result_item)
             predictions.append(predicted_answer_std)

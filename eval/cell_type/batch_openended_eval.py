@@ -38,39 +38,14 @@ def load_qa_data(input_file: str) -> List[Dict]:
     return data
 
 
-def remove_candidate_list(question: str) -> str:
-    """
-    Remove the candidate list from the question.
-    The candidate list typically starts with "Match the cells above to one of the following cell types:"
-    """
-    # Find the line that indicates candidate list start
-    lines = question.split('\n')
-    filtered_lines = []
-
-    for line in lines:
-        # Stop when we reach the candidate list prompt
-        if "Match the cells above to one of the following" in line or \
-           "match the cells" in line.lower():
-            break
-        filtered_lines.append(line)
-
-    # Add instruction to generate cell types freely
-    filtered_lines.append("\nFor each cell above, determine the correct cell type based on the gene expression pattern and donor context.")
-
-    return '\n'.join(filtered_lines)
-
-
 def prepare_messages(qa_item: Dict, system_msg: str) -> List[Dict]:
     """
     Convert a QA item to chat-style messages.
-    This removes the candidate list from the question.
+    Data should already be in batch_openended format (no candidate list).
     """
-    # Remove candidate list from question
-    modified_question = remove_candidate_list(qa_item["question"])
-
     messages = [
         {"role": "system", "content": system_msg},
-        {"role": "user", "content": modified_question}
+        {"role": "user", "content": qa_item["question"]}
     ]
     return messages
 
@@ -164,7 +139,6 @@ def run_evaluation(
     )
 
     print(f"\n[INFO] Task Variant: Batch + Open-ended")
-    print(f"[INFO] Candidate lists will be removed from questions")
     print(f"[INFO] Loading model: {model_name}")
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
