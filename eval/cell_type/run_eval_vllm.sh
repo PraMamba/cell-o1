@@ -11,14 +11,14 @@ cd ~/cell-o1/eval/cell_type
 
 # ========================= Configuration =========================
 
-# Task type selection
+# Task type selection (can be passed as argument)
 # Options: batch_constrained | batch_openended | single_constrained | single_openended
-TASK_TYPE="single_openended"
+TASK_TYPE="${1:-single_openended}"
 
 # Base configuration
 DATASET_ID="D095"
 BASE_DATA_DIR="/data/Mamba/Project/Single_Cell/Benchmark/Cell_Type/Cell-O1/${DATASET_ID}"
-BASE_OUTPUT_DIR="${BASE_DATA_DIR}/${TASK_TYPE}/eval_results_vllm"
+BASE_OUTPUT_DIR="${BASE_DATA_DIR}/${TASK_TYPE}/eval_results"
 MODEL_NAME="ncbi/Cell-o1"
 
 # vLLM configuration
@@ -60,10 +60,11 @@ fi
 echo ""
 echo "[INFO] Running ${TASK_TYPE} evaluation with vLLM..."
 
-python singlecell_openended_eval_vllm.py \
+python celltype_eval_vllm.py \
     --input_file "$INPUT_JSONL_FILE" \
     --output_dir "$OUTPUT_DIR" \
     --model_name "$MODEL_NAME" \
+    --task_type "$TASK_TYPE" \
     --max_new_tokens $MAX_NEW_TOKENS \
     --batch_size $BATCH_SIZE \
     --tensor_parallel_size $TENSOR_PARALLEL_SIZE \
