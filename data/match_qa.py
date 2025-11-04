@@ -76,6 +76,15 @@ def generate_pairs_for_file(in_path, out_path):
     donor_groups = load_and_group(in_path)
     remaining = {n: TARGET_PER_N for n in range(3, MAX_CELLS_PER_QA + 1)}
     qa_pairs = []
+    
+    # Statistics for debugging
+    total_cells = sum(len(records) for records in donor_groups.values())
+    valid_groups = sum(1 for records in donor_groups.values() 
+                       if len(set(r.get("cell_type", "") for r in records if r.get("cell_type"))) >= 3)
+    invalid_groups = len(donor_groups) - valid_groups
+    
+    pairs_by_n = defaultdict(int)
+    groups_used = set()
 
     made_progress = True
     while any(v > 0 for v in remaining.values()) and made_progress:
@@ -93,13 +102,18 @@ def generate_pairs_for_file(in_path, out_path):
             recs, types = sample_pair(records, n)
             qa_pairs.append(build_one_qa(recs, types, gkey))
             remaining[n] -= 1
+            pairs_by_n[n] += 1
+            groups_used.add(gkey)
             made_progress = True
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(qa_pairs, f, indent=2, ensure_ascii=False)
 
+    # Print detailed statistics
     print(f"[INFO] {os.path.basename(in_path)} → {len(qa_pairs)} QA pairs")
+    print(f"       Total cells: {total_cells}, Groups: {len(donor_groups)} (valid: {valid_groups}, invalid: {invalid_groups})")
+    print(f"       Groups used: {len(groups_used)}, QA pairs by cell count: {dict(pairs_by_n)}")
     return len(qa_pairs)
 
 def main():
