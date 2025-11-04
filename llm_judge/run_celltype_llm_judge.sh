@@ -8,8 +8,10 @@ echo "🎯 Cell Type LLM Judge - DeepSeek API Evaluation"
 echo "========================================================"
 
 # === Input/Output Configuration ===
-PREDICTIONS_PATH="${1:-/data/Mamba/Project/Single_Cell/Benchmark/Cell_Type/Cell-O1/A013/eval_results/singlecell_openended/singlecell_openended_predictions_20251029_154813.json}"
-OUTPUT_DIR="${2:-/data/Mamba/Project/Single_Cell/Benchmark/Cell_Type/Cell-O1/A013/llm_judge}"
+PREDICTIONS_PATH="${1:-/gpfs/Mamba/Project/Single_Cell/Evaluate/MetaQA_SingleCell_Test_Diverse_NEW-RVQ/External/Qwen2.5-7B-Instruct_Manual_Resize_Block-8_Size-32_Num-256_ExplicitTokens_Continued-Pretrain=TOP-500_GeneNames_Sample-0.1_MetaQA=Cell_Type_NEW-RVQ_V1/checkpoint-72000/inference-vllm_20251102_17-dataset_id=D094_lung_subset-task_type=cell_type_identification/inference_results.json}"
+OUTPUT_DIR="${2:-/gpfs/Mamba/Project/Single_Cell/Evaluate/MetaQA_SingleCell_Test_Diverse_NEW-RVQ/External/Qwen2.5-7B-Instruct_Manual_Resize_Block-8_Size-32_Num-256_ExplicitTokens_Continued-Pretrain=TOP-500_GeneNames_Sample-0.1_MetaQA=Cell_Type_NEW-RVQ_V1/checkpoint-72000/inference-vllm_20251102_17-dataset_id=D094_lung_subset-task_type=cell_type_identification/llm_judge}"
+DATASET_ID="${3:-D094}"
+
 mkdir -p "$OUTPUT_DIR"
 
 # === Sampling Configuration ===
@@ -17,8 +19,8 @@ MAX_SAMPLES=-1  # Set to -1 to evaluate all samples
 RANDOM_SEED=42
 
 # === Performance Configuration ===
-BATCH_SIZE=32
-MAX_CONCURRENT=8
+BATCH_SIZE=512
+MAX_CONCURRENT=16
 DELAY_BETWEEN_BATCHES=1.0
 
 # === LLM API Configuration ===
@@ -93,7 +95,7 @@ if [ -f "$JUDGED_RESULTS" ]; then
         --judged_results_path "$JUDGED_RESULTS" \
         --output_path "$OUTPUT_DIR" \
         --threshold $BINARY_THRESHOLD \
-        --dataset A013
+        --dataset $DATASET_ID
     
     if [ $? -eq 0 ]; then
         echo ""
