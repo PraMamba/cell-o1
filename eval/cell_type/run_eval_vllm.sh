@@ -16,23 +16,26 @@ cd ~/cell-o1/eval/cell_type
 TASK_TYPE="${1:-single_openended}"
 
 # Base configuration
-DATASET_ID="D095"
-BASE_DATA_DIR="/data/Mamba/Project/Single_Cell/Benchmark/Cell_Type/Cell-O1/${DATASET_ID}"
+DATASET_ID="D094"
+BASE_DATA_DIR="/gpfs/Mamba/Project/Single_Cell/Benchmark/Cell_Type/Cell-O1/${DATASET_ID}"
 BASE_OUTPUT_DIR="${BASE_DATA_DIR}/${TASK_TYPE}/eval_results"
 MODEL_NAME="ncbi/Cell-o1"
 
 # vLLM configuration
-BATCH_SIZE=256
+BATCH_SIZE=1024
 MAX_NEW_TOKENS=2048
 TENSOR_PARALLEL_SIZE=2
 GPU_MEMORY_UTILIZATION=0.9
 TEMPERATURE=0.0
-TOP_P=1.0
+TOP_P=0.9
 TOP_K=-1
 
 # Input/Output paths
-OUTPUT_DIR="${BASE_OUTPUT_DIR}/"
-INPUT_JSONL_FILE="${BASE_DATA_DIR}/${TASK_TYPE}/qa/${DATASET_ID}_subset_processed_w_cell2sentence_qa_conversations.jsonl"
+OUTPUT_DIR="${BASE_OUTPUT_DIR}"
+# INPUT_JSONL_FILE="${BASE_DATA_DIR}/${TASK_TYPE}/qa/${DATASET_ID}_subset_processed_w_cell2sentence_qa_conversations.jsonl"
+# INPUT_JSONL_FILE="${BASE_DATA_DIR}/${TASK_TYPE}/qa/${DATASET_ID}_processed_sampled_w_cell2sentence_qa_conversations.jsonl"
+INPUT_JSONL_FILE="${BASE_DATA_DIR}/${TASK_TYPE}/qa/${DATASET_ID}_lung_subset_processed_w_cell2sentence_qa_conversations.jsonl"
+
 
 # ========================= Run Evaluation =========================
 
